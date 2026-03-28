@@ -15,23 +15,11 @@ public class CharComparison {
         return character;
     }
 
-    public void setCharacter(char character) {
-        this.character = character;
-    }
-
     public int getCorrectCount() {
         return correctCount;
     }
 
-    public void setCorrectCount(int correctCount) {
-        this.correctCount = correctCount;
-    }
-
     public int getIncorrectCount() {
         return incorrectCount;
-    }
-
-    public void setIncorrectCount(int incorrectCount) {
-        this.incorrectCount = incorrectCount;
     }
 }

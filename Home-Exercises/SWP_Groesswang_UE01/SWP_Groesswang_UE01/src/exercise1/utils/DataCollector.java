@@ -1,5 +1,9 @@
 package exercise1.utils;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,12 +18,9 @@ import java.util.List;
  * - number of definitions
  */
 public class DataCollector {
-    public int getTotalComparisons() {
-        return totalComparisons;
-    }
 
     /// counting fields
-    private int totalComparisons;
+    private int chatComparisons;
     private final ArrayList<CharComparison> char_comparison = new ArrayList<>();
     private int numberOfIndices;
     private int numberOfAssignments;
@@ -29,6 +30,30 @@ public class DataCollector {
 
 
     public DataCollector() {
+    }
+
+    public int getChatComparisons() {
+        return chatComparisons;
+    }
+
+    public int getNumberOfIndices() {
+        return numberOfIndices;
+    }
+
+    public int getNumberOfAssignments() {
+        return numberOfAssignments;
+    }
+
+    public int getNumberOfAdditions() {
+        return numberOfAdditions;
+    }
+
+    public int getNumberOfMultiplications() {
+        return numberOfMultiplications;
+    }
+
+    public int getNumberOfComparisons() {
+        return numberOfComparisons;
     }
 
     //adds a statistic for a character comparison, if the character is already in the list, it updates the counts, otherwise it adds a new entry
@@ -48,7 +73,7 @@ public class DataCollector {
     }
 
     public boolean countedEqual(final char a, final char b) {
-        totalComparisons++;
+        chatComparisons++;
         actionsOnNumber(a, a == b);
         return a == b;
     }
@@ -63,12 +88,8 @@ public class DataCollector {
         return a;
     }
 
-    public <E> boolean compare(E a, E b) {
-        numberOfComparisons++;
-        return a.equals(b);
-    }
-
     public boolean compareTerm(boolean term) {
+        chatComparisons++;
         numberOfComparisons++;
         return term;
     }
@@ -108,6 +129,44 @@ public class DataCollector {
             System.out.println(data.character + " : " + data.correctCount + " correct, " + data.incorrectCount + " incorrect");
         }
 
-        System.out.println("Total comparisons: " + totalComparisons);
+        System.out.println("Total comparisons: " + chatComparisons);
+    }
+
+    public void exportStatistics() {
+        Path output = Path.of("statistics.csv");
+
+        try (BufferedWriter writer = Files.newBufferedWriter(output)) {
+            writer.write("metric,value");
+            writer.newLine();
+            writer.write("chat_comparisons," + chatComparisons);
+            writer.newLine();
+            writer.write("numberOfIndices," + numberOfIndices);
+            writer.newLine();
+            writer.write("numberOfAssignments," + numberOfAssignments);
+            writer.newLine();
+            writer.write("numberOfAdditions," + numberOfAdditions);
+            writer.newLine();
+            writer.write("numberOfMultiplications," + numberOfMultiplications);
+            writer.newLine();
+            writer.write("numberOfComparisons," + numberOfComparisons);
+            writer.newLine();
+            writer.newLine();
+
+            writer.write("character,correctCount,incorrectCount");
+            writer.newLine();
+            for (CharComparison data : char_comparison) {
+                writer.write(escapeCsv(String.valueOf(data.character)) + "," + data.correctCount + "," + data.incorrectCount);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("CSV export failed: " + output.toAbsolutePath(), e);
+        }
+    }
+
+    private String escapeCsv(String value) {
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 }

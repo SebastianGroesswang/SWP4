@@ -2,8 +2,6 @@ package exercise1.search;
 
 import exercise1.utils.DataCollector;
 
-import java.util.LinkedList;
-
 public class BoyerMooreSearch {
 
     // -------------- private --------------
@@ -43,13 +41,14 @@ public class BoyerMooreSearch {
 
     public static int search(final String text, final String pattern, int startPos, final DataCollector dataCollector) {
 
-        if (dataCollector.compareTerm(text.length() < pattern.length())) {
+        if (dataCollector.compareTerm(text.length() < pattern.length()) || dataCollector.compareTerm(startPos < 0) || dataCollector.compareTerm(startPos > text.length())) {
             return -1;
         }
 
         Integer[] shiftTable = dataCollector.assignment(getShiftTable(pattern, dataCollector));
 
-        int k = dataCollector.assignment(startPos);
+        dataCollector.assignment(startPos);
+        int k;
         int n = dataCollector.assignment(pattern.length());
         int m = dataCollector.assignment(text.length());
 
@@ -58,9 +57,13 @@ public class BoyerMooreSearch {
 
             do {
                 k = dataCollector.assignment(dataCollector.add(k, -1));
-            } while (dataCollector.compareTerm(k >= 0) && dataCollector.countedEqual(
-                    dataCollector.getIndex(text, dataCollector.add(startPos, k)),
-                    dataCollector.getIndex(pattern, k))
+            } while (
+                    dataCollector.compareTerm(k >= 0) &&
+                            dataCollector.countedEqual(
+                                dataCollector.getIndex(text, dataCollector.add(startPos, k)
+                                ),
+                                dataCollector.getIndex(pattern, k)
+                            )
             );
 
             if (dataCollector.compareTerm(k >= 0)) {
@@ -71,12 +74,15 @@ public class BoyerMooreSearch {
                 );
 
                 startPos = dataCollector.assignment(
-                        dataCollector.getIndex(shiftTable, bad_char)
+                        dataCollector.add(
+                                startPos, dataCollector.getIndex(shiftTable, bad_char)
+                        )
                 );
             }
         } while (
                 dataCollector.compareTerm(k >= 0) && dataCollector.compareTerm(startPos <= dataCollector.add(m, -n))
         );
+
         return dataCollector.compareTerm(k < 0) ? startPos : -1;
     }
 }

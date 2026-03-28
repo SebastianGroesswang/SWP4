@@ -8,28 +8,30 @@ public class BruteSearch {
         return search(text, pattern, 0, dataCollector);
     }
 
-    public static int search(String text, String pattern, int start, DataCollector dataCollector) {
+    public static int search(String text, String pattern, int startPos, DataCollector dc) {
+        if(dc.compareTerm(startPos < 0) || dc.compareTerm(startPos > text.length()) || dc.compareTerm(pattern.length() > text.length()))
+            return -1;
 
-        for (int i = dataCollector.assignment(start);
-             dataCollector.compareTerm(
-                     i < dataCollector.add(
+        for (int i = dc.assignment(startPos);
+             dc.compareTerm(
+                     i <= dc.add(
                              text.length(),
                              - pattern.length()
                      )
              );
-             dataCollector.assignment(dataCollector.add(i,1))
+             i = dc.assignment(dc.add(i,1))
         ) {
-            int k = dataCollector.assignment(0);
-            while (dataCollector.compareTerm(k < pattern.length()) && //&& is a logical operator
-                    dataCollector.countedEqual(
-                            dataCollector.getIndex(text, dataCollector.add(i, k)),
-                            dataCollector.getIndex(pattern, k)
+            int k = dc.assignment(0);
+            while (dc.compareTerm(k < pattern.length()) && //&& is a logical operator
+                    dc.countedEqual(
+                            dc.getIndex(text, dc.add(i, k)),
+                            dc.getIndex(pattern, k)
                     )
             ) {
 
-                k = dataCollector.assignment(dataCollector.add(k,1));
+                k = dc.assignment(dc.add(k,1));
             }
-            if (dataCollector.compareTerm(k == pattern.length())) {
+            if (dc.compareTerm(k == pattern.length())) {
                 return i;
             }
         }
