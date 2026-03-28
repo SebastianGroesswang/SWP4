@@ -96,6 +96,72 @@ Hier wurde ersichtlich das die Konsolen Ausgabe gleich der CSV-Ausgabe ist.
 ## Aufgabe 2
 ### Lösungsidee
 
+*Generelle Informationen*
+
+Zuerst einmal ein kleiner Überblick: Wir sollen 4 verschiedene Linux Shell Befehle nachbauen und diese auch testen.
+Die Befehle dabei sollen dabei als eine Methode realisiert werden.
+
+Der Plan für diese Aufgabe is folgender: Die Implementierung der Logik soll dabei in einem seperaten Package ``commands`` liegen.
+Diese können dann von 4 verschiedenen ausführbaren Klassen genutzt werden. Welche sich wie ein Konsolen-Programm verhalten.
+
+In der Klasse ``Commands.java`` findet man dabei die Implementierungen der 4 Befehle. Diese geben alle einen `Stringbuilder` zurück welcher 
+die Konsolenausgabe enthält.
+
+#### Head
+
+Für Head muss eine Zahl mit angegeben werden welche Anzahl der Zeilen ausgegeben werden sollen.
+Wenn die Zahl kleiner oder gleich 0 ist kann die Funktionen gleich abgebrocchen werden mit einer ``IllegalArgumentException``.
+Wenn das File nicht gefunden wird wird eine ``FileNotFoundException`` geworfen.
+
+Wenn jetzt aber eine Zahl angeben wird, die größer ist als die tatsächliche Anzahl der Zeilen, wird einfach das gesammte File ausgegeben.
+
+#### Tail
+Diese Funktion ist ein bisschen spannender als die erste. Hier sollte man vorher wissen wie viele Lines ein File hat um vom Ende aus wegzuzählen.
+Alleine vom Gedanken her wäre es am einfachsten, das gesamte File in eine Liste zu packen und von dieser die letzten Zeilen zu extrahieren.
+
+Zum Glück gibt es gleich eine Methode in ``java.io.FileReader`` welches das gesamte File in eine Liste packt. Über die Methode `#readAllLines()` wird eine List<String> zurückgegeben,
+welche alle Lines des gesammten Files enthält. Von dieser Liste aus kann man direkt auf einen ``ListIterator`` zugreifen. Zusätlich kann man gleich noch angeben an welchen Index der Iterator startet.
+Nun muss nur noch über den Iterator nach vorne gegangen werden und voila - man kann von hinten aus die letzten Zeilen extrahieren.
+
+Natürlich kann man auch mit der Kirche ums Kreuz gehen alle Zeilen in eine Liste Packen. Und von hier aus von dem passenden Index weg die Zeilen in den String Builder packen.
+
+
+Für die Edge Cases gelten die selben Regeln wie bei Head.
+
+#### TreeSize
+
+#### Loc
+
+Loc ist hier die leichteste Aufgabe. Hier muss nur File Inhalte eingelesen werden. Hierfür wird wieder der ``FileReader`` genutzt.
+Damit erhalten wir eine Liste von Strings. Länge der Liste ist hierbei die Anzahl der Zeilen im File.
+Nun muss nurnoch durch jede Zeile am Leerzeichen gesplittet werden. Damit erhalten wir die Anzahl der Spalten, was wiederrum die Anzahl der Wörter in den Zeilen sind.
+Die Einzelnen Elemente sind jetzt die einzelnen Zeichen welche nurnoch aufsummiert werden müssen. 
+
+Da in der Angabe nicht spezifiert ist, was ein Wort ist, wird hier keine weitere überprüfung durchgeführt. 
+Dabei könnte ``-.-`` auch als Wort gelten.
+
 ### Testfälle
 
+Die Tests fuer `exercise2` decken aktuell die Befehle `head`, `tail` und `loc` ab.
+
+**Head (`HeadTests`)**
+- `testHeadWithExistingFile`: Gibt die ersten 3 Zeilen aus `TestFile1` korrekt zurueck (`a`, `b`, `c`).
+- `testHeadWithNonExistingFile`: Bei nicht existierender Datei wird `FileNotFoundException` erwartet.
+- `testHeadWithNegativeNumberOfLines`: Bei negativer Zeilenzahl wird `IllegalArgumentException` erwartet.
+- `testHeadWithMoreLinesThanFile`: Wenn mehr Zeilen angefordert werden als vorhanden, wird die komplette Datei (`TestFile2`) ausgegeben.
+
+**Tail (`TailTest`)**
+- `testTailWithExistingFile`: Gibt die letzten 3 Zeilen aus `TestFile1` korrekt zurueck (`x`, `y`, `z`).
+- `testTailWithNonExistingFile`: Bei nicht existierender Datei wird `FileNotFoundException` erwartet.
+- `testTailWithNegativeNumberOfLines`: Bei negativer Zeilenzahl wird `IllegalArgumentException` erwartet.
+- `testTailWithMoreLinesThanFile`: Wenn mehr Zeilen angefordert werden als vorhanden, wird die komplette Datei (`TestFile2`) ausgegeben.
+
+**Loc (`LocTest`)**
+- `testLocWithExistingFile`: `TestFile1` wird als `LocStatistics(26, 26, 26)` validiert.
+- `testLocWithTestFile2`: `TestFile2` wird als `LocStatistics(3, 3, 11)` validiert.
+- `testLocWithTestFile3`: `TestFile3` wird als `LocStatistics(6, 14, 49)` validiert.
+- `testLocWithNonExistingFile`: Bei nicht existierender Datei wird eine Exception erwartet.
+
+**Hinweis zu TreeSize**
+- Fuer `treeSize` sind aktuell noch keine separaten Unit-Tests im Package `exercise2.test` vorhanden.
 
