@@ -19,7 +19,7 @@ class DataCollectorTest {
         assertFalse(dc.countedEqual('a', 'b'));
         assertFalse(dc.countedEqual('x', 'y'));
 
-        assertEquals(3, dc.getChatComparisons());
+        assertEquals(3, dc.getCharComparisons());
 
         List<CharComparison> stats = dc.getCharComparison();
         assertEquals(2, stats.size());
@@ -64,7 +64,6 @@ class DataCollectorTest {
         assertFalse(dc.compareTerm(false));
 
         assertEquals(2, dc.getNumberOfComparisons());
-        assertEquals(2, dc.getChatComparisons());
     }
 
     @Test

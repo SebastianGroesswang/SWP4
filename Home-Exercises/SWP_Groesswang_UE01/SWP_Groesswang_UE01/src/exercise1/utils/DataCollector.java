@@ -20,7 +20,7 @@ import java.util.List;
 public class DataCollector {
 
     /// counting fields
-    private int chatComparisons;
+    private int charComparisons;
     private final ArrayList<CharComparison> char_comparison = new ArrayList<>();
     private int numberOfIndices;
     private int numberOfAssignments;
@@ -32,8 +32,8 @@ public class DataCollector {
     public DataCollector() {
     }
 
-    public int getChatComparisons() {
-        return chatComparisons;
+    public int getCharComparisons() {
+        return charComparisons;
     }
 
     public int getNumberOfIndices() {
@@ -73,7 +73,7 @@ public class DataCollector {
     }
 
     public boolean countedEqual(final char a, final char b) {
-        chatComparisons++;
+        charComparisons++;
         actionsOnNumber(a, a == b);
         return a == b;
     }
@@ -89,7 +89,6 @@ public class DataCollector {
     }
 
     public boolean compareTerm(boolean term) {
-        chatComparisons++;
         numberOfComparisons++;
         return term;
     }
@@ -129,7 +128,7 @@ public class DataCollector {
             System.out.println(data.character + " : " + data.correctCount + " correct, " + data.incorrectCount + " incorrect");
         }
 
-        System.out.println("Total comparisons: " + chatComparisons);
+        System.out.println("Total comparisons: " + charComparisons);
     }
 
     public void exportStatistics() {
@@ -138,7 +137,7 @@ public class DataCollector {
         try (BufferedWriter writer = Files.newBufferedWriter(output)) {
             writer.write("metric,value");
             writer.newLine();
-            writer.write("chat_comparisons," + chatComparisons);
+            writer.write("chat_comparisons," + charComparisons);
             writer.newLine();
             writer.write("numberOfIndices," + numberOfIndices);
             writer.newLine();

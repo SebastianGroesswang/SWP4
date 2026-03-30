@@ -50,7 +50,7 @@ public class Main {
 
     private static void printStatisticsToConsole(DataCollector dc) {
         System.out.println("metric,value");
-        System.out.println("chat_comparisons," + dc.getChatComparisons());
+        System.out.println("chat_comparisons," + dc.getCharComparisons());
         System.out.println("numberOfIndices," + dc.getNumberOfIndices());
         System.out.println("numberOfAssignments," + dc.getNumberOfAssignments());
         System.out.println("numberOfAdditions," + dc.getNumberOfAdditions());

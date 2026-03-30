@@ -1,5 +1,5 @@
 # SWP Groesswang UE01
-Stundenaufwand: 
+Stundenaufwand: 5 h
 
 ## Aufgabe 1
 ### Lösungsidee
@@ -94,6 +94,7 @@ Da der Inhalt der Statistik überprüft wurde musste jetzt nur noch die CSV-Ausg
 Hier wurde ersichtlich das die Konsolen Ausgabe gleich der CSV-Ausgabe ist.
 
 ## Aufgabe 2
+
 ### Lösungsidee
 
 *Generelle Informationen*
@@ -107,6 +108,13 @@ Diese können dann von 4 verschiedenen ausführbaren Klassen genutzt werden. Wel
 In der Klasse ``Commands.java`` findet man dabei die Implementierungen der 4 Befehle. Diese geben alle einen `Stringbuilder` zurück welcher 
 die Konsolenausgabe enthält.
 
+Für eine interaktive Anwendung wurde noch ein kleines Konsolenprogramm implementiert, wo man einfach per input eine der 4 Befehle auswählen kann.
+oder wenn man Programm Argumente angibt kann man das Programm auch direkt starten - einfach bei run-config Argumente angeben:
+
+![img.png](img.png)
+
+Als kleines Beispiel - bin mir nicht sicher ob das so gefordert wurde - implementiert ist es auf jeden Fall.
+
 #### Head
 
 Für Head muss eine Zahl mit angegeben werden welche Anzahl der Zeilen ausgegeben werden sollen.
@@ -118,7 +126,7 @@ Wenn jetzt aber eine Zahl angeben wird, die größer ist als die tatsächliche A
 #### Tail
 Diese Funktion ist ein bisschen spannender als die erste. Hier sollte man vorher wissen wie viele Lines ein File hat um vom Ende aus wegzuzählen.
 Alleine vom Gedanken her wäre es am einfachsten, das gesamte File in eine Liste zu packen und von dieser die letzten Zeilen zu extrahieren.
-
+ 
 Zum Glück gibt es gleich eine Methode in ``java.io.FileReader`` welches das gesamte File in eine Liste packt. Über die Methode `#readAllLines()` wird eine List<String> zurückgegeben,
 welche alle Lines des gesammten Files enthält. Von dieser Liste aus kann man direkt auf einen ``ListIterator`` zugreifen. Zusätlich kann man gleich noch angeben an welchen Index der Iterator startet.
 Nun muss nur noch über den Iterator nach vorne gegangen werden und voila - man kann von hinten aus die letzten Zeilen extrahieren.
@@ -129,6 +137,17 @@ Natürlich kann man auch mit der Kirche ums Kreuz gehen alle Zeilen in eine List
 Für die Edge Cases gelten die selben Regeln wie bei Head.
 
 #### TreeSize
+
+Diese Methode ist die algorithmisch schwerste. Es springt gleich ins Auge, dass hier die rekursive Methode definitiv am besten ist.
+Mittels ``file.length()`` bekommt man die Byte Anzahl des Files, leider aber nicht vom Ordner.
+
+Die leichteste Methode wäre dabei alle Files innerhalb eines Ordners zusammenzuzällen womit man dann die Größe bekommt.
+Rekursiv kann man aber nicht verwenden, da es auch Unterordner geben kann. Und der String muss vor der Rekursion aufgebaut werden, damit man die Größe des Ordners bekommt.
+Also hierfür müsste man die Größe des Ordners in den String einfügen bevor man überhaupt in den Unterordner geht. - Geht leider nd :cry:
+
+Drehen wir nun den Spieß um - wir gehen in jedes Verzeichniss rein und geben dann die Bytes als Rückgabewert zurück. Dadurch haben wir das gewünschte Ergebnis.
+Nur leider am Kopf. ``#reverse()`` funktioniert leider nicht gut genug. Daher Spliten wir einfach den String bei jedem \n und gehen von hinten durch das Array und bauen uns den String wieder auf.
+Und voila!
 
 #### Loc
 
@@ -142,7 +161,7 @@ Dabei könnte ``-.-`` auch als Wort gelten.
 
 ### Testfälle
 
-Die Tests fuer `exercise2` decken aktuell die Befehle `head`, `tail` und `loc` ab.
+Die Tests fuer `exercise2` decken aktuell die Befehle `head`, `tail`, `loc` und `treeSize` ab.
 
 **Head (`HeadTests`)**
 - `testHeadWithExistingFile`: Gibt die ersten 3 Zeilen aus `TestFile1` korrekt zurueck (`a`, `b`, `c`).
@@ -162,6 +181,13 @@ Die Tests fuer `exercise2` decken aktuell die Befehle `head`, `tail` und `loc` a
 - `testLocWithTestFile3`: `TestFile3` wird als `LocStatistics(6, 14, 49)` validiert.
 - `testLocWithNonExistingFile`: Bei nicht existierender Datei wird eine Exception erwartet.
 
-**Hinweis zu TreeSize**
-- Fuer `treeSize` sind aktuell noch keine separaten Unit-Tests im Package `exercise2.test` vorhanden.
+**TreeSize (`TreeTests`)**
+- `testTreeSizeWithInvalidDirectoryPath`: Ungültiger Pfad führt zu `IllegalArgumentException`.
+- `testTreeSizeWithFilePathInsteadOfDirectory`: Datei statt Verzeichnis führt zu `IllegalArgumentException`.
+- `testTreeSizeWithEmptyDirectory`: Leeres Verzeichnis wird mit `0 bytes` ausgegeben.
+- `testTreeSizeWithNestedDirectoryAndFile`: Rekursive Berechnung für Unterordner und Datei liefert die erwartete Gesamtgröße und Struktur.
 
+**Annotation `@TempDir` in `TreeTests`**
+- `@TempDir` erstellt für jeden Test automatisch ein temporäres Verzeichnis.
+- Dadurch sind die Tests isoliert und unabhängig vom echten Projekt-Dateisystem.
+- Das Verzeichnis wird von JUnit nach dem Testlauf wieder aufgeräumt.

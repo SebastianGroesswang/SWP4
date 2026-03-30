@@ -4,10 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
-import java.util.Scanner;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
 
 public class Commands {
 
@@ -67,20 +66,49 @@ public class Commands {
         if (!file.isDirectory() || !file.exists())
             throw new IllegalArgumentException("Path must be a valid directory");
 
+        long _ = tree(file, result, 0);
 
-        //todo currrent problem with right file size of folders
-        tree(file, result, 0);
+        //result list is upside down, so reverse it
+        // list.reverse() seems to be flaky so we had do go the algorithmic way
+        String[] s = result.toString().split("\n");
 
-        return result;
+        String resultString = "";
+        for (int i = s.length -1; i >= 0; i--) {
+            resultString += s[i] + "\n";
+        }
+
+        return resultString.isEmpty() ? new StringBuilder("Directory is empty") : new StringBuilder(resultString);
     }
 
-    private static void tree(File path, StringBuilder result, int depth) {
-        result.repeat("\t", depth).append(path.getName()).append(" - ").append(path.length()).append("\n");
+    static DecimalFormat df = new DecimalFormat("#,###", DecimalFormatSymbols.getInstance(Locale.GERMANY));
 
-        if (!path.isFile())
-            for (File child : Objects.requireNonNull(path.listFiles())) {
-                tree(child, result, depth + 1);
+    private static long tree(File path, StringBuilder result, int depth) {
+        long byteCounter = 0;
+
+
+
+        for (File child : Objects.requireNonNull(path.listFiles())) {
+
+            if (child.isDirectory()) {
+                byteCounter += tree(child, result, depth + 1);
+            } else {
+                byteCounter += child.length();
+                result.repeat("\t", depth + 1)
+                        .append(child.getName())
+                        .append(" - ")
+                        .append(df.format(child.length()))
+                        .append(" bytes \n");
             }
+        }
+
+        result.repeat("\t", depth)
+                .append(path.getName())
+                .append(" - ")
+                .append(df.format(byteCounter))
+                .append(" bytes")
+                .append("\n");
+
+        return byteCounter;
     }
 
     public static class LocStatistics {
@@ -105,6 +133,23 @@ public class Commands {
             this.numberOfWords = numberOfWords;
             this.numberOfCharacters = numberOfCharacters;
         }
+
+        public int getNumberOfLines() {
+            return numberOfLines;
+        }
+
+        public int getNumberOfWords() {
+            return numberOfWords;
+        }
+
+        public int getNumberOfCharacters() {
+            return numberOfCharacters;
+        }
+
+        @Override
+        public String toString() {
+            return "lines=" + numberOfLines + ", words=" + numberOfWords + ", characters=" + numberOfCharacters;
+        }
     }
 
     public static LocStatistics loc(String path) throws IOException {
@@ -114,7 +159,7 @@ public class Commands {
             throw new IllegalArgumentException("Path must be a valid file");
 
         StringBuilder result = new StringBuilder();
-        LocStatistics locStatistics = new LocStatistics(0,0,0);
+        LocStatistics locStatistics = new LocStatistics(0, 0, 0);
 
         try (FileReader reader = new FileReader(file)) {
 
@@ -122,10 +167,9 @@ public class Commands {
             locStatistics.numberOfLines = lines.size();
 
             for (int i = 0; i < locStatistics.numberOfLines; i++) {
-
                 //Split line by spaces
                 for (String word : lines.get(i).split(" ")) {
-                    if  (!word.isEmpty()) {
+                    if (!word.isEmpty()) {
                         locStatistics.numberOfWords++;
                         locStatistics.numberOfCharacters += word.length();
                     }
