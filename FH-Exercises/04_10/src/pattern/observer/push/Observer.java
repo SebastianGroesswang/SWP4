@@ -1,5 +1,5 @@
 package pattern.observer.push;
 
-public interface Observer<E> {
-    void update(E changedData);
+public interface Observer {
+    void update(Observable o, Object arg);
 }

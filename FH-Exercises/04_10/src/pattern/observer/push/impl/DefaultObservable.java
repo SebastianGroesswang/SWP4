@@ -26,7 +26,7 @@ public abstract class DefaultObservable implements Observable {
     @Override
     public void notifyObservers() {
         for (Observer observer : registerObserver) {
-            observer.update(getState());
+            observer.update(this, this.getState());
         }
     }
 
