@@ -1,5 +1,5 @@
 public interface Graph {
-    boolean addEdge(int v, int w);
-    boolean hasEdge(int v, int w);
-    boolean removeEdge(int v, int w);
+    boolean addEdge(int src, int dest);
+    boolean hasEdge(int src, int dest);
+    boolean removeEdge(int src, int dest);
 }
